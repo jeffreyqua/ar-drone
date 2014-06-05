@@ -62,44 +62,48 @@ client.config('control:altitude_min', 50);
 // or set it to 10000 to let the drone ﬂy as high as desired. On AR.Drone 2.0 : Any value will be set as a maximum
 // altitude, as the pressure sensor allow altitude measurement at any height. Typical value for "unlimited" altitude
 // will be 100000 (100 meters from the ground)
-client.config('control:altitude_max', 500);
+client.config('control:altitude_max', 100);
 // console.log(client.config('control:altitude_max'));
 
-// Maximum vertical speed of the AR.Drone, in milimeters per second.
-// Recommanded values goes from 200 to 2000. Others values may cause instability.
-// This value will be saved to indoor/outdoor_control_vz_max, according to the CONFIG:outdoor setting.
-client.config('control:control_vz_max', 100);
-// console.log('VZ_max:' + client.config({key:'CONTROL:control_vz_max'}) );
+// // Maximum vertical speed of the AR.Drone, in milimeters per second.
+// // Recommanded values goes from 200 to 2000. Others values may cause instability.
+// // This value will be saved to indoor/outdoor_control_vz_max, according to the CONFIG:outdoor setting.
+client.config('control:control_vz_max', 200);
+// // console.log('VZ_max:' + client.config({key:'CONTROL:control_vz_max'}) );
 
-// The drone can either send a reduced set of navigation data to its clients 
-client.config('general:navdata_demo', 'TRUE');
-client.on('navdata', console.log);
+// // The drone can either send a reduced set of navigation data to its clients 
+// client.config('general:navdata_demo', 'TRUE');
+// client.on('navdata', console.log);
 
-// Maximum yaw speed of the AR.Drone, in radians per second.
-// Recommanded values goes from 40/s to 350/s (approx 0.7rad/s to 6.11rad/s). Others values may cause instability.
-// This value will be saved to indoor/outdoor_control_yaw, according to the CONFIG:outdoor setting 
-client.config('control:control_yaw', 1.0);
+// // Maximum yaw speed of the AR.Drone, in radians per second.
+// // Recommanded values goes from 40/s to 350/s (approx 0.7rad/s to 6.11rad/s). Others values may cause instability.
+// // This value will be saved to indoor/outdoor_control_yaw, according to the CONFIG:outdoor setting 
+// client.config('control:control_yaw', 1.0);
 
-// This settings tells the control loop that the AR.Drone is flying outside. Setting the indoor/outdoor flight will load the corresponding indoor/outdoor_control_yaw, indoor/outdoor_eu- ler_angle_max and indoor/outdoor_control_vz_max.
-// Note : This settings enables the wind estimator of the AR.Drone 2.0 , and thus should always be enabled when flying outside. Note : This settings corresponds to the Outdoor flight setting of AR.FreeFlight
+// // This settings tells the control loop that the AR.Drone is flying outside. Setting the indoor/outdoor flight will load the corresponding indoor/outdoor_control_yaw, indoor/outdoor_eu- ler_angle_max and indoor/outdoor_control_vz_max.
+// // Note : This settings enables the wind estimator of the AR.Drone 2.0 , and thus should always be enabled when flying outside. Note : This settings corresponds to the Outdoor flight setting of AR.FreeFlight
 client.config('control:outdoor', false);
 
-// Maximum bending angle for the drone in radians, for both pitch and roll angles.
-// The progressive command function and its associated AT command refer to a percentage of this value. Note : For
-// AR.Drone 2.0 , the new progressive command function is preferred (with the corresponding AT command).
-// This parameter is a positive floating-point value between 0 and 0.52 (ie. 30 deg). Higher values might be available
-// on a specific drone but are not reliable and might not allow the drone to stay at the same altitude.
-// This value will be saved to indoor/outdoor_euler_angle_max, according to the CONFIG:outdoor setting.
-client.config('control:euler_angle_max', 0.25);
+// // Maximum bending angle for the drone in radians, for both pitch and roll angles.
+// // The progressive command function and its associated AT command refer to a percentage of this value. Note : For
+// // AR.Drone 2.0 , the new progressive command function is preferred (with the corresponding AT command).
+// // This parameter is a positive floating-point value between 0 and 0.52 (ie. 30 deg). Higher values might be available
+// // on a specific drone but are not reliable and might not allow the drone to stay at the same altitude.
+// // This value will be saved to indoor/outdoor_euler_angle_max, according to the CONFIG:outdoor setting.
+// client.config('control:euler_angle_max', 0.25);
 
 client.takeoff();
 
 client
-.after(10,function() {
+.after(5000, function() {
 	this.stop();
-	this.up(500);
+  this.clockwise(0.5);
 })
 .after(10000, function() {
+  this.stop();
+  this.counterClockwise(0.5);
+})
+.after(15000, function() {
   this.stop();
   this.land();
 });
