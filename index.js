@@ -6,6 +6,8 @@ var client = arDrone.createClient();
 var control = arDrone.createUdpControl();
 // Init http (For PNG stream)
 var http    = require('http');
+// Init Keypress
+var keypress = require('keypress');
 
 /****************************************************** 
 
@@ -39,13 +41,6 @@ server.listen(8080, function() {
   console.log('Serving latest png on port 8080 ...');
 });
 
-// var callback = function(err) { if (err) console.log(err+'hallo'); else console.log("no problemo");};
-// client.config({ key: 'control:altitude_max', value: 600, timeout: 10 }, callback);
-
-// Maximum Altitude 1m
-// Minimum Altitude 20cm
-// Max vertical speed: 200mm/s
-// client.config({key: 'control:altitude_max', value: 600}, callback);
 
 /****************************************************** 
 
@@ -62,13 +57,13 @@ client.config('control:altitude_min', 50);
 // or set it to 10000 to let the drone ﬂy as high as desired. On AR.Drone 2.0 : Any value will be set as a maximum
 // altitude, as the pressure sensor allow altitude measurement at any height. Typical value for "unlimited" altitude
 // will be 100000 (100 meters from the ground)
-client.config('control:altitude_max', 100);
+client.config('control:altitude_max', 250);
 // console.log(client.config('control:altitude_max'));
 
 // // Maximum vertical speed of the AR.Drone, in milimeters per second.
 // // Recommanded values goes from 200 to 2000. Others values may cause instability.
 // // This value will be saved to indoor/outdoor_control_vz_max, according to the CONFIG:outdoor setting.
-client.config('control:control_vz_max', 200);
+// client.config('control:control_vz_max', 50);
 // // console.log('VZ_max:' + client.config({key:'CONTROL:control_vz_max'}) );
 
 // // The drone can either send a reduced set of navigation data to its clients 
@@ -85,7 +80,7 @@ client.config('control:control_vz_max', 200);
 client.config('control:outdoor', false);
 
 // // Maximum bending angle for the drone in radians, for both pitch and roll angles.
-// // The progressive command function and its associated AT command refer to a percentage of this value. Note : For
+// // The progressive command function and its associated AT command refer to a percentage of this. Note : For
 // // AR.Drone 2.0 , the new progressive command function is preferred (with the corresponding AT command).
 // // This parameter is a positive floating-point value between 0 and 0.52 (ie. 30 deg). Higher values might be available
 // // on a specific drone but are not reliable and might not allow the drone to stay at the same altitude.
@@ -96,17 +91,65 @@ client.takeoff();
 
 client
 .after(5000, function() {
-	this.stop();
-  this.clockwise(0.5);
-})
-.after(10000, function() {
   this.stop();
-  this.counterClockwise(0.5);
 })
-.after(15000, function() {
+.after(1005000, function() {
   this.stop();
   this.land();
 });
+
+
+// make `process.stdin` begin emitting "keypress" events
+keypress(process.stdin);
+
+// listen for the "keypress" event
+process.stdin.on('keypress', function (ch, key) {
+  //console.log('got "keypress"', key);
+  if (key.name == 'k') {
+  	console.log('kill drone!');
+  	client.stop();
+  	client.land();
+  }
+  if (key.name == 'l') {
+  	console.log('land drone');
+  }
+  if (key.name == 'r') {
+  	console.log('rotate drone');
+  	client.clockwise(0.1);
+  }
+  if (key.name == 'h') {
+  	console.log('stop and hover drone');
+  }
+  if (key.name == 'm') {
+  	process.stdin.pause();
+  	process.kill();
+  }
+});
+
+process.stdin.setRawMode(true);
+// process.stdin.resume();
+
+
+// client
+// .after(5000, function() {
+// 	this.stop();
+// })
+// .after(5000, function() {
+//   this.stop();
+//   this.left(0.5);
+// })
+// .after(10000, function() {
+//   this.stop();
+//   this.right(0.5);
+// })
+// .after(5000, function() {
+//   this.stop();
+//   this.left(0.5);
+// })
+// .after(5000, function() {
+//   this.stop();
+//   this.land();
+// });
 
 /****************************************************** 
 
